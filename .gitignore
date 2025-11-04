@@ -1,0 +1,8 @@
+bin/
+build/
+pycache/
+.pyc
+experiments/.csv
+experiments/plots/.png
+data/.txt
+*.o
