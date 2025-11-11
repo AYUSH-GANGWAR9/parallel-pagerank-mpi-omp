@@ -1,0 +1,4 @@
+procs,omp_threads,total_time_s,iterations,exit_code,logfile
+1,2,0.72,41,0,data/pagerank_p1.log
+2,2,0.66,41,0,data/pagerank_p2.log
+4,2,0.72,41,0,data/pagerank_p4.log

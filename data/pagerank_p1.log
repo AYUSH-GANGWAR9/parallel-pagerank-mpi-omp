@@ -1,0 +1,56 @@
+Read 99996 edges, N=916396, procs=1
+Iter 0 diff=0.0158512, time(s)=0.00753693
+Iter 1 diff=0.00872863, time(s)=0.00592565
+Iter 2 diff=0.00454943, time(s)=0.00559967
+Iter 3 diff=0.00269276, time(s)=0.00564602
+Iter 4 diff=0.00172763, time(s)=0.00749882
+Iter 5 diff=0.00116863, time(s)=0.00636741
+Iter 6 diff=0.000823789, time(s)=0.00673184
+Iter 7 diff=0.000598627, time(s)=0.00572261
+Iter 8 diff=0.000446334, time(s)=0.00615635
+Iter 9 diff=0.000339216, time(s)=0.0060078
+Iter 10 diff=0.00026211, time(s)=0.00560772
+Iter 11 diff=0.000205041, time(s)=0.00603624
+Iter 12 diff=0.000162196, time(s)=0.00548438
+Iter 13 diff=0.00012937, time(s)=0.00590841
+Iter 14 diff=0.000103995, time(s)=0.00584179
+Iter 15 diff=8.40758e-05, time(s)=0.00561921
+Iter 16 diff=6.83545e-05, time(s)=0.00632186
+Iter 17 diff=5.57974e-05, time(s)=0.0060064
+Iter 18 diff=4.57381e-05, time(s)=0.00627697
+Iter 19 diff=3.7602e-05, time(s)=0.00598876
+Iter 20 diff=3.10102e-05, time(s)=0.00573468
+Iter 21 diff=2.5629e-05, time(s)=0.00622966
+Iter 22 diff=2.12342e-05, time(s)=0.00580472
+Iter 23 diff=1.76219e-05, time(s)=0.00660431
+Iter 24 diff=1.46527e-05, time(s)=0.00604047
+Iter 25 diff=1.21998e-05, time(s)=0.00578551
+Iter 26 diff=1.01741e-05, time(s)=0.00606118
+Iter 27 diff=8.49405e-06, time(s)=0.00559855
+Iter 28 diff=7.10056e-06, time(s)=0.00637678
+Iter 29 diff=5.94067e-06, time(s)=0.0059921
+Iter 30 diff=4.97582e-06, time(s)=0.0057722
+Iter 31 diff=4.17053e-06, time(s)=0.0058174
+Iter 32 diff=3.49889e-06, time(s)=0.00564354
+Iter 33 diff=2.93713e-06, time(s)=0.00693676
+Iter 34 diff=2.46753e-06, time(s)=0.00726245
+Iter 35 diff=2.07412e-06, time(s)=0.00733478
+Iter 36 diff=1.74453e-06, time(s)=0.00607978
+Iter 37 diff=1.46796e-06, time(s)=0.00612426
+Iter 38 diff=1.23596e-06, time(s)=0.00625151
+Iter 39 diff=1.04104e-06, time(s)=0.00602259
+Iter 40 diff=8.77275e-07, time(s)=0.00657775
+Top 10 PageRank (val, node):
+0: 2.72748e-05 , 32163
+1: 2.6021e-05 , 614831
+2: 2.52229e-05 , 943
+3: 2.26225e-05 , 504140
+4: 2.12157e-05 , 1560
+5: 2.10375e-05 , 161158
+6: 2.10375e-05 , 17754
+7: 1.9882e-05 , 846221
+8: 1.95812e-05 , 1337
+9: 1.93766e-05 , 163075
+Total time (max over ranks) = 0.254319 s
+Comp time (max) = 0.0642093 s, Comm time (max) = 0.018007 s
+Iterations = 41
