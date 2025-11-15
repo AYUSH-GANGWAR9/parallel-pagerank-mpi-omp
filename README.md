@@ -66,50 +66,7 @@ Create these files (I give full content). Use your editor (nano, vim) or redirec
 
 4.2 create a Makefile using touch command in wsl.**
 
-**4.3 run_scaling_capture_time.sh**
-
-#!/usr/bin/env bash
-set -euo pipefail
-
-mkdir -p data
-OUTCSV=data/scaling_results.csv
-echo "procs,omp_threads,total_time_s,iterations,exit_code,logfile" > "$OUTCSV"
-
-PROCS_LIST="1 2 4"
-OMP_T=2
-EDGEFILE="data/web-Google-100k.txt"
-BIN="./pagerank"
-
-for p in $PROCS_LIST; do
-  export OMP_NUM_THREADS=$OMP_T
-  LOG="data/pagerank_p${p}.log"
-  TIMEF="data/pagerank_time_p${p}.txt"
-  echo "=== Running: mpirun -np $p (OMP=$OMP_NUM_THREADS) ==="
-  timeout 600s /usr/bin/time -f "%e" -o "$TIMEF" mpirun --allow-run-as-root --oversubscribe --bind-to none -np $p $BIN $EDGEFILE 0 500 1e-6 0.85 > "$LOG" 2>&1 || true
-  RC=$?
-  ELAPSED=$(cat "$TIMEF" 2>/dev/null || echo "")
-  if [ -z "$ELAPSED" ]; then ELAPSED="error"; fi
-  ITERS=$(grep -oE "Iterations[[:space:]]*[:=]?[[:space:]]*[0-9]+" "$LOG" | head -n1 | grep -oE "[0-9]+" || true)
-  if [ -z "$ITERS" ]; then
-    ITERS=$(grep -oE "Iter[[:space:]]*[0-9]+" "$LOG" | tail -n1 | grep -oE "[0-9]+" || true)
-  fi
-  if [ -z "$ITERS" ]; then ITERS="error"; fi
-
-  echo "$p,$OMP_T,$ELAPSED,$ITERS,$RC,$LOG" >> "$OUTCSV"
-  echo "Recorded -> p=$p time=$ELAPSED iters=$ITERS rc=$RC log=$LOG"
-done
-
-echo
-echo "Wrote $OUTCSV"
-cat "$OUTCSV"
-echo
-echo "Tails of logs:"
-for f in data/pagerank_p*.log; do
-  echo "---- $f ----"
-  tail -n 50 "$f" || true
-  echo
-done
-
+**4.3 run the code in this file in wsl directly run_scaling_capture_time.sh**
 
 **Make it executable:**
 
