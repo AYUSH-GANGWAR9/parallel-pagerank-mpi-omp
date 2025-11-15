@@ -71,14 +71,17 @@ Copy code
 sudo apt update
 sudo apt install -y build-essential openmpi-bin libopenmpi-dev python3 python3-pip
 pip install pandas matplotlib
-2️⃣ Compile the Project
+
+### 2️⃣ Compile the Project
 bash
 Copy code
 mpicxx -O3 -fopenmp -std=c++17 pagerank.cpp -o pagerank
-3️⃣ Run PageRank
+
+##3 3️⃣ Run PageRank
 bash
 Copy code
 mpirun -np 2 ./pagerank data/web-Google-100k.txt 0 100 1e-6 0.85
+
 Arguments:
 
 php-template
@@ -89,7 +92,9 @@ Example:
 bash
 Copy code
 mpirun -np 4 ./pagerank data/web-Google-100k.txt 0 100 1e-6 0.85
-📊 Running Performance Analysis
+
+### 📊 Running Performance Analysis
+
 To test strong scaling automatically:
 
 bash
@@ -108,19 +113,20 @@ Then visualize using:
 bash
 Copy code
 python3 plot_scaling.py
-📈 Results
+
+### 📈 Results
 Processes	OMP Threads	Total Time (s)	Iterations
 1	2	0.67	41
 2	2	1.01	41
 4	2	0.59	41
 
-📉 Performance Graphs
+## 📉 Performance Graphs
 Metric	Plot
 Total Time	
 Speedup	
 Efficiency	
 
-🧠 Key Implementation Details
+## 🧠 Key Implementation Details
 Graph stored in CSR (Compressed Sparse Row) format for efficient access.
 
 Handles dangling nodes (pages with no outbound links) properly.
@@ -131,20 +137,8 @@ OpenMP used for loop-level parallelism within each rank.
 
 Automatically normalizes rank vector after each iteration.
 
-🧪 Example Output (Excerpt)
-lua
-Copy code
-Read 99996 edges, N=916396, procs=2
-Iter 0 diff=0.841724, time(s)=0.0097
-Iter 10 diff=0.00026211, time(s)=0.0064
-Top 10 PageRank (val, node):
-0: 2.72748e-05 , 32163
-1: 2.60210e-05 , 614831
-...
-Total time (max) = 0.12 s
-Comp time (max) = 0.021 s, Comm time (max) = 0.018 s
-Iterations = 21
-🧾 Deliverables
+## 🧾 Deliverables
+
 File	Description
 pagerank.cpp	Core hybrid MPI+OpenMP implementation
 run_scaling.sh	Benchmark script for scaling runs
@@ -153,7 +147,8 @@ Parallel_PageRank_Report.pdf	Final report (detailed methodology & results)
 pagerank_presentation.pdf	5-slide Beamer presentation
 README.md	Documentation and setup guide
 
-🏁 Conclusion
+## 🏁 Conclusion
+
 Achieved a working parallel implementation of PageRank using MPI + OpenMP.
 
 Verified correctness on the SNAP web-Google dataset.
