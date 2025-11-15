@@ -41,52 +41,133 @@ PageRank is an iterative algorithm that assigns a ranking score to each node (we
 
 ## 🛠️ Setup Instructions
 
-### 1️⃣ Install Dependencies
-```bash
+1 — Create project folder & enter it
+mkdir -p ~/DPC_Project/Parallel_PageRank
+cd ~/DPC_Project/Parallel_PageRank
+
+2 — Install system deps (one-time)
 sudo apt update
-sudo apt install -y build-essential openmpi-bin libopenmpi-dev python3 python3-pip
+sudo apt install -y build-essential openmpi-bin libopenmpi-dev python3 python3-venv wget unzip
+
+3 — Create & activate Python virtualenv (for plotting tools)
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
 pip install pandas matplotlib
 
-### 2️⃣ Compile the Project
-bash
-Copy code
-mpicxx -O3 -fopenmp -std=c++17 pagerank.cpp -o pagerank
 
-##3 3️⃣ Run PageRank
-bash
-Copy code
-mpirun -np 2 ./pagerank data/web-Google-100k.txt 0 100 1e-6 0.85
+When finished, you’ll see (venv) in your prompt.
 
-Arguments:
+**4 — Files to create**
 
-php-template
-Copy code
-<file> <N_nodes=0(auto)> <max_iter> <tolerance> <damping_factor>
-Example:
+Create these files (I give full content). Use your editor (nano, vim) or redirect cat > file <<'EOF' ... EOF.
 
-bash
-Copy code
-mpirun -np 4 ./pagerank data/web-Google-100k.txt 0 100 1e-6 0.85
+**4.1 make a pagerank.cpp using touch command in wsl.
 
-### 📊 Running Performance Analysis
+4.2 create a Makefile using touch command in wsl.**
 
-To test strong scaling automatically:
+**4.3 run_scaling_capture_time.sh**
 
-bash
-Copy code
-bash run_scaling.sh
-This script:
+#!/usr/bin/env bash
+set -euo pipefail
 
-Runs with 1, 2, and 4 processes.
+mkdir -p data
+OUTCSV=data/scaling_results.csv
+echo "procs,omp_threads,total_time_s,iterations,exit_code,logfile" > "$OUTCSV"
 
-Records execution time and iterations.
+PROCS_LIST="1 2 4"
+OMP_T=2
+EDGEFILE="data/web-Google-100k.txt"
+BIN="./pagerank"
 
-Saves all logs in data/scaling_results.csv.
+for p in $PROCS_LIST; do
+  export OMP_NUM_THREADS=$OMP_T
+  LOG="data/pagerank_p${p}.log"
+  TIMEF="data/pagerank_time_p${p}.txt"
+  echo "=== Running: mpirun -np $p (OMP=$OMP_NUM_THREADS) ==="
+  timeout 600s /usr/bin/time -f "%e" -o "$TIMEF" mpirun --allow-run-as-root --oversubscribe --bind-to none -np $p $BIN $EDGEFILE 0 500 1e-6 0.85 > "$LOG" 2>&1 || true
+  RC=$?
+  ELAPSED=$(cat "$TIMEF" 2>/dev/null || echo "")
+  if [ -z "$ELAPSED" ]; then ELAPSED="error"; fi
+  ITERS=$(grep -oE "Iterations[[:space:]]*[:=]?[[:space:]]*[0-9]+" "$LOG" | head -n1 | grep -oE "[0-9]+" || true)
+  if [ -z "$ITERS" ]; then
+    ITERS=$(grep -oE "Iter[[:space:]]*[0-9]+" "$LOG" | tail -n1 | grep -oE "[0-9]+" || true)
+  fi
+  if [ -z "$ITERS" ]; then ITERS="error"; fi
 
-Then visualize using:
+  echo "$p,$OMP_T,$ELAPSED,$ITERS,$RC,$LOG" >> "$OUTCSV"
+  echo "Recorded -> p=$p time=$ELAPSED iters=$ITERS rc=$RC log=$LOG"
+done
 
-bash
-Copy code
+echo
+echo "Wrote $OUTCSV"
+cat "$OUTCSV"
+echo
+echo "Tails of logs:"
+for f in data/pagerank_p*.log; do
+  echo "---- $f ----"
+  tail -n 50 "$f" || true
+  echo
+done
+
+
+**Make it executable:**
+
+chmod +x run_scaling_capture_time.sh
+
+**4.4 make a plot_scaling.py using touch command in wsl and using nano to write in that file.**
+
+**5 — Download the SNAP dataset and prepare a manageable subset
+**
+mkdir -p data
+cd data
+wget https://snap.stanford.edu/data/web-Google.txt.gz
+gunzip -f web-Google.txt.gz
+# create a 100k-edge subset used in our experiments
+head -n 100000 web-Google.txt > web-Google-100k.txt
+cd ..
+
+
+If wget fails, download manually from https://snap.stanford.edu/data/web-Google.html
+ and upload to data/.
+
+6 — Build the project
+
+Back in project root:
+
+make clean
+make -j
+ls -l pagerank
+
+7 — Quick single-process test (verify correctness)
+
+export OMP_NUM_THREADS=4        # set OpenMP threads per rank
+unset DEBUG_PAGERANK           # or "export DEBUG_PAGERANK=1" to see debug
+mpirun --allow-run-as-root --oversubscribe -np 1 ./pagerank data/web-Google-100k.txt 0 100 1e-6 0.85 | tee data/pagerank_run_p1.log
+tail -n 40 data/pagerank_run_p1.log
+
+8 — Real scaling experiment (1,2,4 processes) and collect timings
+
+Run the provided script:
+
+./run_scaling_capture_time.sh
+
+That will:
+
+run p = 1, 2, 4 (each with OMP_NUM_THREADS=2 as set in script),
+
+write data/pagerank_p{p}.log and data/pagerank_time_p{p}.txt,
+
+create data/scaling_results.csv.
+
+Inspect the CSV:
+
+cat data/scaling_results.csv
+
+9 — Plot speedup & efficiency
+
+With venv active:
+
 python3 plot_scaling.py
 
 ### 📈 Results
