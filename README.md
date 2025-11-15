@@ -99,8 +99,11 @@ ls -l pagerank
 7 — Quick single-process test (verify correctness)
 
 export OMP_NUM_THREADS=4        # set OpenMP threads per rank
+
 unset DEBUG_PAGERANK           # or "export DEBUG_PAGERANK=1" to see debug
+
 mpirun --allow-run-as-root --oversubscribe -np 1 ./pagerank data/web-Google-100k.txt 0 100 1e-6 0.85 | tee data/pagerank_run_p1.log
+
 tail -n 40 data/pagerank_run_p1.log
 
 8 — Real scaling experiment (1,2,4 processes) and collect timings
