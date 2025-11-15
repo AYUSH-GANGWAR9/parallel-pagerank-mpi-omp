@@ -39,31 +39,6 @@ PageRank is an iterative algorithm that assigns a ranking score to each node (we
 
 ---
 
-## 🧩 Project Structure
-
-Parallel_PageRank/
-│
-├── data/
-│ ├── web-Google-100k.txt # Subset of SNAP dataset
-│ ├── scaling_results.csv # Performance results
-│ ├── total_time_plot.png
-│ ├── speedup_plot.png
-│ └── efficiency_plot.png
-│
-├── pagerank.cpp # Main hybrid MPI + OpenMP code
-├── Makefile # Compilation script
-├── run_scaling.sh # Script for multi-process runs
-├── plot_scaling.py # Python visualization
-├── pagerank_presentation.tex # Beamer PPT (5 slides)
-├── Parallel_PageRank_Report.pdf # Detailed report
-├── pagerank_presentation.pdf # Presentation slides
-└── README.md # (this file)
-
-yaml
-Copy code
-
----
-
 ## 🛠️ Setup Instructions
 
 ### 1️⃣ Install Dependencies
