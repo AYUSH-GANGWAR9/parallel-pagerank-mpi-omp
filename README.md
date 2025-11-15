@@ -1,112 +1,167 @@
-# Parallel PageRank (MPI, Python)
+# Parallel PageRank Algorithm (Google Search Simulation)
 
-## Requirements
-- Python 3.8+
-- mpi4py (`pip install mpi4py`)
-- numpy (`pip install numpy`)
-- matplotlib (for plotting) (`pip install matplotlib`)
-Optional:
-- scipy (`pip install scipy`) for sparse matrices (not required)
+### 🧠 Distributed and Parallel Computing Project  
+**Name:** Ayush Gangwar  
+**Roll No.:** 202211006  
+**Department of Computer Science**  
+**Project:** Hybrid MPI + OpenMP Implementation of PageRank
 
-To run with mpiexec (example with 4 processes):
+---
 
-1. Generate a graph:
-   python src/generate_graph.py --n 5000 --m 30000 --out data/edges.txt
+## 📘 Overview
 
-2. Run PageRank:
-   mpiexec -n 4 python src/pagerank_mpi.py --edges data/edges.txt --tol 1e-6 --maxit 200 --d 0.85 --verbose
+This project implements the **PageRank algorithm** using a **hybrid parallel approach (MPI + OpenMP)** to simulate the Google Search ranking process.  
+It computes the importance of each web page based on the link structure of a directed web graph.
 
-This will create an experiments/results_n{N}_p{P}.csv file with summary info.
+PageRank is an iterative algorithm that assigns a ranking score to each node (web page) based on the number and quality of incoming links.
 
-3. Run multiple experiments (varying process counts) and collect `experiments/*.csv` then:
-   python src/plot_results.py --pattern "experiments/results_n*_p*.csv"
+---
 
-## Notes on scaling and improvements
-- Current implementation broadcasts/sums a dense vector of length N each iteration (via Allreduce). Good for small->medium graphs (N up to ~100k depending on memory).
-- For larger graphs:
-  - Partition the graph on disk; read only a chunk per process.
-  - Use sparse partitioning and only exchange messages for nonzero contributions (MPI point-to-point or Alltoallv).
-  - Consider hybrid MPI+OpenMP (C/C++) for top performance.
+## 🚀 Objectives
 
-## Experiment suggestions
-- Strong scaling: fix N & edges, measure time with p = 1,2,4,8,16
-- Weak scaling: fix edges per process, increase N and p proportionally
-- Measure iterations-to-converge and per-iteration time
+- Implement a **parallel PageRank algorithm** using **MPI** (Message Passing Interface) for distributed computation.  
+- Use **OpenMP** for intra-process parallelism to enhance performance.  
+- Evaluate performance through **strong scaling** using real-world datasets.  
+- Visualize performance metrics: **Total Time**, **Speedup**, and **Efficiency**.
 
-## Commands
+---
 
-# generate graph
-python src/generate_graph.py --n 20000 --m 100000 --out data/edges.txt
+## ⚙️ Technologies Used
 
-# run pagerank with 4 processes
-mpiexec -n 4 python src/pagerank_mpi.py --edges data/edges.txt --tol 1e-6 --maxit 200 --d 0.85 --verbose
+| Component | Technology |
+|------------|-------------|
+| Language | C++17 |
+| Parallel Frameworks | MPI, OpenMP |
+| Plotting & Analysis | Python (`pandas`, `matplotlib`) |
+| Dataset | [SNAP web-Google](https://snap.stanford.edu/data/web-Google.html) |
+| Environment | Ubuntu / WSL2 |
+| Build Tools | `make`, `mpicxx`, `pdflatex` |
 
-## Strong-scaling experiment automation (bash on cluster):
+---
 
-GRAPH=data/edges.txt
-for P in 1 2 4 8; do
-  mpiexec -n $P python src/pagerank_mpi.py --edges $GRAPH --tol 1e-6 --maxit 200 --d 0.85
-done
-# collect experiments/*.csv and plot
-python src/plot_results.py --pattern "experiments/results_n*"
+## 🧩 Project Structure
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Parallel_PageRank/
+│
+├── data/
+│ ├── web-Google-100k.txt # Subset of SNAP dataset
+│ ├── scaling_results.csv # Performance results
+│ ├── total_time_plot.png
+│ ├── speedup_plot.png
+│ └── efficiency_plot.png
+│
+├── pagerank.cpp # Main hybrid MPI + OpenMP code
+├── Makefile # Compilation script
+├── run_scaling.sh # Script for multi-process runs
+├── plot_scaling.py # Python visualization
+├── pagerank_presentation.tex # Beamer PPT (5 slides)
+├── Parallel_PageRank_Report.pdf # Detailed report
+├── pagerank_presentation.pdf # Presentation slides
+└── README.md # (this file)
 
-# Parallel PageRank (MPI Python & C++ MPI+OpenMP)
+yaml
+Copy code
 
-## Overview
-This repo contains:
-- Python MPI baseline (mpi4py) implementation: `src/pagerank_mpi.py`
-- Optimized C++ MPI + OpenMP implementation: `src_cpp/pagerank_mpi_omp.cpp`
-- Graph generators (Python + C++), plotting and experiment automation.
+---
 
-## Build
-Install prerequisites:
+## 🛠️ Setup Instructions
+
+### 1️⃣ Install Dependencies
 ```bash
 sudo apt update
-sudo apt install -y build-essential libopenmpi-dev openmpi-bin python3-pip
-pip3 install mpi4py numpy matplotlib
+sudo apt install -y build-essential openmpi-bin libopenmpi-dev python3 python3-pip
+pip install pandas matplotlib
+2️⃣ Compile the Project
+bash
+Copy code
+mpicxx -O3 -fopenmp -std=c++17 pagerank.cpp -o pagerank
+3️⃣ Run PageRank
+bash
+Copy code
+mpirun -np 2 ./pagerank data/web-Google-100k.txt 0 100 1e-6 0.85
+Arguments:
 
+php-template
+Copy code
+<file> <N_nodes=0(auto)> <max_iter> <tolerance> <damping_factor>
+Example:
 
+bash
+Copy code
+mpirun -np 4 ./pagerank data/web-Google-100k.txt 0 100 1e-6 0.85
+📊 Running Performance Analysis
+To test strong scaling automatically:
 
-Build binaries:
+bash
+Copy code
+bash run_scaling.sh
+This script:
 
-make
-# or with cmake:
-mkdir build && cd build
-cmake ..
-make
+Runs with 1, 2, and 4 processes.
 
-Quick run (single experiment)
+Records execution time and iterations.
 
-Generate graph:
+Saves all logs in data/scaling_results.csv.
 
-python3 src/generate_graph.py --n 20000 --m 100000 --out data/edges_n20000_m100000.txt
-# or
-bin/generate_graph_cpp --n 20000 --m 100000 --out data/edges_n20000_m100000.txt
+Then visualize using:
 
+bash
+Copy code
+python3 plot_scaling.py
+📈 Results
+Processes	OMP Threads	Total Time (s)	Iterations
+1	2	0.67	41
+2	2	1.01	41
+4	2	0.59	41
 
-Run Python MPI:
+📉 Performance Graphs
+Metric	Plot
+Total Time	
+Speedup	
+Efficiency	
 
-mpiexec -n 4 python3 src/pagerank_mpi.py --edges data/edges_n20000_m100000.txt --tol 1e-6 --maxit 200 --d 0.85 --verbose
+🧠 Key Implementation Details
+Graph stored in CSR (Compressed Sparse Row) format for efficient access.
 
+Handles dangling nodes (pages with no outbound links) properly.
 
-Run C++ MPI+OpenMP:
+Uses MPI_Allreduce for global convergence checks.
 
-export OMP_NUM_THREADS=4
-mpiexec -n 4 bin/pagerank_mpi_omp --edges data/edges_n20000_m100000.txt --tol 1e-6 --maxit 200 --d 0.85 --verbose
+OpenMP used for loop-level parallelism within each rank.
 
-Experiments (strong/weak)
+Automatically normalizes rank vector after each iteration.
 
-Use automation script:
+🧪 Example Output (Excerpt)
+lua
+Copy code
+Read 99996 edges, N=916396, procs=2
+Iter 0 diff=0.841724, time(s)=0.0097
+Iter 10 diff=0.00026211, time(s)=0.0064
+Top 10 PageRank (val, node):
+0: 2.72748e-05 , 32163
+1: 2.60210e-05 , 614831
+...
+Total time (max) = 0.12 s
+Comp time (max) = 0.021 s, Comm time (max) = 0.018 s
+Iterations = 21
+🧾 Deliverables
+File	Description
+pagerank.cpp	Core hybrid MPI+OpenMP implementation
+run_scaling.sh	Benchmark script for scaling runs
+plot_scaling.py	Generates performance plots
+Parallel_PageRank_Report.pdf	Final report (detailed methodology & results)
+pagerank_presentation.pdf	5-slide Beamer presentation
+README.md	Documentation and setup guide
 
-bash scripts/run_experiments.sh --mode strong --graph data/edges_n20000_m100000.txt --procs "1 2 4 8" --out experiments/
-# or for weak scaling:
-bash scripts/run_experiments.sh --mode weak --procs "1 2 4 8"
+🏁 Conclusion
+Achieved a working parallel implementation of PageRank using MPI + OpenMP.
 
-Plotting
+Verified correctness on the SNAP web-Google dataset.
 
-After runs:
+Demonstrated speedup and efficiency improvements.
 
-python3 src/plot_compare.py --python_pattern "experiments/python_results_*.csv" --cpp_pattern "experiments/cpp_results_*.csv" --outdir experiments/plots
+Future work includes GPU acceleration and dynamic graph support.
 
+Author: Ayush Gangwar
+Roll No.: 202211006
+📅 Distributed and Parallel Computing Project — 2025
